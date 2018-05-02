@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
+    Book save(Book book);
     List<Book> findAll();
     List<Book> findAllByGenre(String genre);
     List<Book> findAllByTitle(String title);

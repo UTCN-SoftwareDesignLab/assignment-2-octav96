@@ -10,6 +10,7 @@ import bookStore.service.BookService;
 import bookStore.service.ReportService;
 import bookStore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -133,6 +134,8 @@ public class AdminController {
         if (bindingResult.hasErrors()) {
             return "add_user";
         }
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userService.create(userDTO);
         return "add_user_result";
     }

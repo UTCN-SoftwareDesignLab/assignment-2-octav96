@@ -22,7 +22,7 @@ public class EmployeeController {
 
     @GetMapping("/employee")
     public String employee(){
-        return "employee";
+        return "/employee";
     }
 
     @GetMapping("/books_by_genre")
@@ -52,7 +52,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/books_by_author")
-    public ModelAndView geetAllBooksByAuthorSubmit(@ModelAttribute("book") @ Valid BookDTO bookDTO,
+    public ModelAndView geetAllBooksByAuthorSubmit(@ModelAttribute("book") @Valid BookDTO bookDTO,
                                                    BindingResult bindingResult){
         if (bindingResult.hasFieldErrors("author")) {
             // List<Book> bookDTOList = bookService.findAllByGenre(bookDTO.getGenre());

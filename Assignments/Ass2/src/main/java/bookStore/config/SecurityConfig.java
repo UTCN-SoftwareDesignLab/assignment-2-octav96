@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @Configuration
@@ -19,14 +20,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private DataSource dataSource;
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
+    public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
                 .jdbcAuthentication()
                 .dataSource(dataSource)
                 .usersByUsernameQuery("select username, password, true from user where username = ?")
                 .authoritiesByUsernameQuery("select username, role from user where username = ?")
                 .rolePrefix("ROLE_")
-                .passwordEncoder(NoOpPasswordEncoder.getInstance());
+                .passwordEncoder(new BCryptPasswordEncoder());
     }
 
     @Override
@@ -36,14 +37,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/employee/**").access("hasRole('EMPLOYEE')")
-                .antMatchers("/admin/**", "/employee/**").access("hasRole('ADMINISTRATOR')")
+                .antMatchers("/admin/**").access("hasRole('ADMINISTRATOR')")
+                .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .successHandler(new SuccessHandler())
+                .successHandler(getSuccessHandler())
                 .permitAll()
                 .and()
                 .logout()
                 .permitAll();
+    }
+
+    private SuccessHandler getSuccessHandler(){
+        return new SuccessHandler();
     }
 }
